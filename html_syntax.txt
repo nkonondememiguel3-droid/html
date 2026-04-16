@@ -1,0 +1,245 @@
+The HTML syntax
+--------------------
+
+1. Writing HTML documents
+
+HTML documents must consist of the following parts, in the given order:
+	* Optionally, a single U+FEFF BYTE ORDER MARK (BOM) character.
+	* Any number of `comments` and `ASCII whitespace`.
+	* A `DOCTYPE`.
+	* Any number of `comments` and `ASCII whitespace`.
+	* The `document element`, in the form of an html element.
+	* Any number of `comments` and `ASCII whitespace`.
+
+1.1 The DOCTYPE
+
+The DOCTYPEs are just required for legacy reasons, when not used the browsers tend to use a different rendering model that is incompatible with some specifications.
+
+A DOCTYPE must consist of the following components, in this order:
+	- An ASCII case-insensitive match for the string "<!DOCTYPE".
+	- One or more ASCII whitespace.
+	- An ASCII case-insensitive match for the string "html".
+	- Zero or more ASCII whitespace.
+	- A GREATER-THAN SIGNE character (>).
+	
+1.2 Elements
+
+There are six different kinds of `elements`:
+	** void elements;
+	** the template element;
+	** raw text elements;
+	** escapable raw text elements;
+	** foreign elements;
+	** normal elements;
+	
+		** void elements **
+area, base, br, col, embed, img, input, link, meta, source, track, wbr
+	
+		** the template element **
+template
+		** raw text elements **
+script, style
+		** escapable raw text elements **
+textarea, title
+		** foreign elements **
+Elements from the MathML namespace and the SVG namespace.
+		** normal elements **
+All other allowed `HTML elements` are normal elements.
+
+
+1.2.1 Start tags
+
+HTML tags start with a 'Start tag' which has the following format:
+	- The first character must be a LESS-THAN SIGN character (<);
+	- The next few characters must be the element's tag name;
+	- If there are to be any attributes in the next step, there must first be one or more ASCII whitespace;
+	- Then, the start tag may have a number of attributes. Attributes must be separated from each other by one or more ASCII space.
+	- Then, if the element is one of the void elements, or if the element is a foreign element, then there may be a single SOLIDUS character (/), which on foreign elements marks the start tag as self-closing. On void elemnts, it does not mark the start tag as self-closing but instead is unnecessary and has no effect of any kind.
+	- Finally, start tags must be closed by a GREATER-THAN SIGN character (>);
+
+1.2.2 End tags
+
+End tags must have the following format:
+	- The first character of an end tag must be a LESS-THAN SIGN character (<);
+	- The second character of an end tag must be a SOLIDUS character (/);
+	- The next characters of an end tag must be the element's tag name;
+	- After the tag name, there may be one or more ASCII whitespace;
+	- Finally, end tags must be closed by a GREATER-THAN SIGN character (>);
+
+1.2.3 Attributes
+
+Attributes are expressed inside the element's start tag.
+Attributes have a name and a value.
+Attributes names must consist of one or more characters other than controls.
+Attributes values are a mixture of text and character references, except with the additional restriction that the text cannot contain an `ambiguous ampersand`.
+	
+	* Emtpy attribute syntax:
+		- Just the attribute name. Then value is implicitly the empty string.
+	* Unquoted attribute value syntax:
+		- The attribute name
+		- Followed by zero or more ASCII whitespace
+		- Followed by a single EQUALS SIGN character
+		- Followed by zero or more ASCII whitespace
+		- Followed by attribute value, which, in addition to the requirements given above for attribute values, must not contain any literal ASCII whitespace, any QUOTATION MARK characters ("), APOSTROPHE characters ('), EQUALS SIGN characters (=), LESS-THAN SIGN characters (<), GREATER-THAN SIGN characters (>), GRAVE ACCENT characters (`), and must not be the empty string.
+	* Single-quoted attribute value syntax:
+		- The attribute name
+		- Followed by zero or more ASCII whitespace
+		- Followed by a single EQUALS SIGN character
+		- Followed by zero or more ASCII whitespace
+		- Followed by a single APOSTROPHE character (')
+		- Followed by the the attribute value, which, in addition to the requirements for attribute values, must not contain any litteral APOSTROPHE characters (')
+		- Finally followed by a second single APOSTROPHE character (')
+	* Double-quoted attribute value syntax:
+		- The attribute name
+		- Followed by zero or more ASSCI whitespace
+		- Followed by a single EQUALS SIGN charcter
+		- Followed by zero or more ASCII whitespace
+		- Followed by a single QUOTATION MARK character (")
+		- Followed by the attribute value, which, in addition to the requirements for attribute values, must not contain any literal QUOTATION MARK characters (")
+		- Finally followed by a second single QUOTATION MARK character (")
+
+There must never be two or more attributes on the same start tag whose names are an ASCII case-insensitive match for each other.
+
+
+1.2.4 Optional tags
+
+Certain tags can be omitted.
+
+	** An 'html' element's start tag may be omitted if the first thing inside the html element is not a comment.
+	
+	Example: in this example case it's ok to remove the "<html>" tag:
+	<!DOCTYPE HTML>
+	<html>
+		<head>
+			<title>Hello</title>
+		</head>
+		<body>
+			<p>Welcome to this example.</p>
+		</body>
+	</html>
+	
+	Doing so would make the document look like this:
+	<!DOCTYPE HTML>
+	
+		<head>
+			<title>Hello</title>
+		</head>
+		<body>
+			<p>Welcome to this example.</p>
+		</body>
+	</html>
+	
+	The two form have the same DOM. The space around the document element is ignore by the parser, so the following one would also have the same DOM as the two other ones:
+	<!DOCTYPE HTML><head>
+			<title>Hello</title>
+		</head>
+		<body>
+			<p>Welcome to this example.</p>
+		</body>
+	</html>
+	
+	However, in the following example, removing the start tag moves the comment to before the html element:
+	<!DOCTYPE HTML>
+	<html>
+		<! -- where is this comment in the DOM? -->
+		<head>
+			<title>Hello</title>
+		</head>
+		<body>
+			<p>Welcome to this example.</p>
+		</body>
+	</html>
+	
+	with the tag remove, the document actually turns into the same as this:
+	<!DOCTYPE HTML>
+	<! -- where is this comment in the DOM? -->
+	<html>
+		<head>
+			<title>Hello</title>
+		</head>
+		<body>
+			<p>Welcome to this example.</p>
+		</body>
+	</html>
+	
+	** An html element's end tag may be omitted if the html element isnot immediately followed by a comment.
+	** A head element's start tag may be omitted if the element is empty, or if the first thing inside the head element is an element.
+	** A head element's end tag may be omitted if the head element is not immediately followed by ASCII whitespace or a comment.
+	** A body element's start tag may be omitted if the element is empty, or if the first thing inside the body element is not ASCII whitespace or a comment, except if the first thing inside the body element is a meta, noscript, link, script, style, or template element.
+	** A body element's end tag may be omitted if the body element is not immediately followed by a comment.
+	** An li element's end tag may be omitted if the li element is immediately followed by another li element or if there is no more content in the parent element.
+	** A dt element's end tag may be omitted if the dt element is immediately followed by another dt element or a dd element.
+	** A dd element's end tag may be omitted if the dd element is immediately followed by another dd element or a dt element, or if there is no more content in the parent element.
+	** A p element's end tag may be omitted if the p element is immediately followed by an address, article, aside, blockquote, details, dialog, div, dl, fieldset, figcaption, figure, footer, form, h1, h2, h3, h4, h5, h6, header, hgroup, hr, main, menu, nav, ol, p, pre, search, section, table, or ul element, or if there is no more content in the parent element and the parent element is an HTML element that is not an a, audio, del, ins, map, noscript, or video element, or an autonomous custom element.
+	An rt element's end tag may be omitted if the rt element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
+
+	** An rp element's end tag may be omitted if the rp element is immediately followed by an rt or rp element, or if there is no more content in the parent element.
+
+	** An optgroup element's end tag may be omitted if the optgroup element is immediately followed by another optgroup element, if it is immediately followed by an hr element, or if there is no more content in the parent element.
+
+	** An option element's end tag may be omitted if the option element is immediately followed by another option element, if it is immediately followed by an optgroup element, if it is immediately followed by an hr element, or if there is no more content in the parent element.
+
+	** A colgroup element's start tag may be omitted if the first thing inside the colgroup element is a col element, and if the element is not immediately preceded by another colgroup element whose end tag has been omitted. (It can't be omitted if the element is empty.)
+
+	** A colgroup element's end tag may be omitted if the colgroup element is not immediately followed by ASCII whitespace or a comment.
+
+	** A caption element's end tag may be omitted if the caption element is not immediately followed by ASCII whitespace or a comment.
+
+	** A thead element's end tag may be omitted if the thead element is immediately followed by a tbody or tfoot element.
+
+	** A tbody element's start tag may be omitted if the first thing inside the tbody element is a tr element, and if the element is not immediately preceded by a tbody, thead, or tfoot element whose end tag has been omitted. (It can't be omitted if the element is empty.)
+
+	** A tbody element's end tag may be omitted if the tbody element is immediately followed by a tbody or tfoot element, or if there is no more content in the parent element.
+
+	** A tfoot element's end tag may be omitted if there is no more content in the parent element.
+
+	** A tr element's end tag may be omitted if the tr element is immediately followed by another tr element, or if there is no more content in the parent element.
+
+	** A td element's end tag may be omitted if the td element is immediately followed by a td or th element, or if there is no more content in the parent element.
+
+	** A th element's end tag may be omitted if the th element is immediately followed by a td or th element, or if there is no more content in the parent element.
+	
+
+1.3 Text
+
+Text is allowed inside elements, attribute values, and comments.
+
+1.3.1 Newlines
+
+Newlines in HTML may be represented either as CARRIAGE RETURN (CR) characters, LINE FEED (LF) characters, or pairs of CARRIAGE RETURN (CR), LINE FEED (LF) characters i that order.
+
+1.4 Character references
+
+In certain cases, text may be mixed with character references. These can be used to escape characters that couldn't otherwise legally be included in text.
+
+Character references must start with a AMPERSAND character (&). Following this, there are three possible kinds of character references:
+	-- Named character references
+	-- Decimal numeric character reference
+	-- Hexadecimal numeric character reference
+An ambiguous ampersand is a AMPERSAND character (&) that is followed by one or more ASCII alphanumerics, followed by a SEMICOLON character (;), where these characters do not match any of the names given in the named character references section.
+
+1.5 CDATA sections
+
+CDATA sections must consist of the following components, in this order:
+	- The string "<![CDATA["
+	- Optionally, text, with the additional restriction that the text must not contain the string "]]>"
+	- The string "]]>"
+	
+Example: CDATA sections can only be used in foreign content (MathML or SVG). In this example, a CDATA section is used to escape the contents of a MathML ms element:
+
+	<p>You can add a string to a number, but this stringifies the number:</p>
+	<math>
+	 	<ms><![CDATA[x<y]]></ms>
+	 	<mo>+</mo>
+	 	<mn>3</mn>
+	 	<mo>=</mo>
+	 	<ms><![CDATA[x<y3]]></ms>
+	</math>
+
+1.6 Comments
+
+Comments must have the following format:
+	- The string "<!--";
+	- Optionally, text, with the additional restriction that the text must not start with the string ">", nor start with the string "->", nor contain the strings "<!--", "-->", or "--!>", nor end with the string "<!-";
+	- The string "-->"
+
