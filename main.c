@@ -1,8 +1,14 @@
 #include "html_parser.h"
-#include <stdio.h>
 
 int main(int argc, char **argv) {
-  printf("%d\n", foo);
+
+  unsigned char *html_source = "<div>Hello, world!</div>";
+  __html__ *html = html_init(html_source, strlen((char *)html_source));
+  html_parse(html);
+
+  html_dump(html);
+
+  html_destroy(html);
 
   return 0;
 }
