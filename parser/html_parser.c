@@ -1,6 +1,8 @@
 #include "html_parser.h"
+#include "lexbor/core/types.h"
+#include "lexbor/html/interfaces/document.h"
+#include "lexbor/html/serialize.h"
 
-/* #include "lexbor/html/html.h" */
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -35,16 +37,29 @@ __html__ *html_init(unsigned char *html_source, size_t html_source_size) {
 
 lxb_status_t html_parse(__html__ *html) {
 
-  lxb_status_t status = lxb_html_document_parse(
-      html->document, html->html_source, html->html_source_size);
+  lxb_status_t status = lxb_html_document_parse_chunk_begin(html->document);
 
   if (status != LXB_STATUS_OK) {
-    fprintf(stderr, "Failed to parse the %s html document.\n",
+    fprintf(stderr, "Failed to begin the stream parsing of %s.\n",
             html->html_source);
     lxb_html_document_destroy(html->document);
     return LXB_STATUS_ERROR;
   }
-  printf("Parsed the html document.\n");
+
+  status = lxb_html_document_parse_chunk(html->document, (lxb_char_t *)html,
+                                         html->html_source_size);
+  if (status != LXB_STATUS_OK) {
+    fprintf(stderr, "Failed to parse the %s html chunk.\n", html->html_source);
+    lxb_html_document_destroy(html->document);
+    return LXB_STATUS_ERROR;
+  }
+
+  status = lxb_html_document_parse_chunk_end(html->document);
+  if (status != LXB_STATUS_OK) {
+    fprintf(stderr, "Failed to finish the parsing of the html document.\n");
+    lxb_html_document_destroy(html->document);
+    return LXB_STATUS_ERROR;
+  }
 
   return LXB_STATUS_OK;
 }

@@ -1,7 +1,8 @@
 #ifndef HTML_PARSER_H
 #define HTML_PARSER_H
 
-#include "lexbor/html/html.h"
+// #include "lexbor/html/html.h"
+#include "lexbor/html/interface.h"
 
 typedef struct {
   lxb_html_document_t *document;
